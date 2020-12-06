@@ -22,4 +22,4 @@ For example with 3 levels depth (note -> links -> links of links)(The Archive ap
 ### Usage
 
 `outliner "path/to/note.md"`  
-will generate `/path/to/DATE Outline note.md`.
+will generate `/path/to/DATE Outline note.md`
