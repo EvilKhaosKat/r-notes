@@ -1,9 +1,14 @@
 # r-notes
-
 ## Auto-outliner
-Generates outline for a note.  
+Generates an outline for a note.   
+Relies on [[wiki-link]] format.   
+
 For example with 3 levels:
-![img.png](auto-outliner.png)
+![auto-outliner.png](auto-outliner.png)
 
 ### Build
 ` go build cmd/outliner/main.go`
+
+### Usage
+`outliner "path/to/note.md"`  
+That will generate `/path/to/DATE Outline note.md`.
