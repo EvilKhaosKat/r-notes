@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const notesDelimiter = "    "
+const notesDelimiter = "...."
 const markdownLineBreak = "  "
 
 type Note struct {
