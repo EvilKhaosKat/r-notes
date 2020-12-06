@@ -6,4 +6,4 @@ For example with 3 levels:
 ![img.png](auto-outliner.png)
 
 ### Build
-`go build `
+` go build cmd/outliner/main.go`
