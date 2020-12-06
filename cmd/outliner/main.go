@@ -12,6 +12,7 @@ import (
 )
 
 const notesDelimiter = "    "
+const markdownLineBreak = "  "
 
 type Note struct {
 	name     string
@@ -54,7 +55,7 @@ func main() {
 	resultFilename := getResultFilename(file)
 	fmt.Printf("writing to %s\n", resultFilename)
 
-	resultContent := []string{"# " + top.name}
+	resultContent := []string{"# " + getNoteName(resultFilename)}
 	resultContent = append(resultContent, hierarchy...)
 	writeToFile(resultFilename, resultContent)
 }
@@ -93,7 +94,7 @@ func getNoteHierarchy(note *Note, delimiter string, result []string) []string {
 		return result
 	}
 
-	result = append(result, fmt.Sprintf("%s[[%s]]", delimiter, note.String()))
+	result = append(result, fmt.Sprintf("%s[[%s]]%s", delimiter, note.String(), markdownLineBreak))
 	for _, child := range note.children {
 		result = getNoteHierarchy(child, delimiter+notesDelimiter, result)
 	}
