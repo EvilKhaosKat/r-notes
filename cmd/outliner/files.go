@@ -19,7 +19,7 @@ func getMdFiles(path string) ([]string, error) {
 				return err
 			}
 
-			if !info.IsDir() && strings.HasSuffix(info.Name(), ".md") {
+			if !info.IsDir() && filepath.Ext(path) == ".md" {
 				files = append(files, path)
 			}
 			return nil
@@ -32,6 +32,7 @@ func getMdFiles(path string) ([]string, error) {
 	return files, nil
 }
 
+//TODO Trie would be much better
 func getFilesByWikiLinks(currentFile string, files []string, wikiLinks []string) []string {
 	var linkedFiles []string
 

@@ -8,8 +8,11 @@ import (
 	"regexp"
 )
 
-const notesDelimiter = "...."
-const markdownLineBreak = "  "
+const (
+	notesDelimiter    = "...."
+	markdownLineBreak = "  "
+	outlineTag        = "#outline"
+)
 
 type Note struct {
 	name     string
@@ -52,7 +55,7 @@ func main() {
 	resultFilename := getResultFilename(file)
 	fmt.Printf("writing to %s\n", resultFilename)
 
-	resultContent := []string{getResultNoteHeader(resultFilename)}
+	resultContent := []string{getResultNoteHeader(resultFilename), outlineTag}
 	resultContent = append(resultContent, outline...)
 
 	writeToFile(resultFilename, resultContent)
@@ -62,7 +65,7 @@ func getResultNoteHeader(resultFilename string) string {
 	return "# " + getNoteName(resultFilename)
 }
 
-//TODO iterative version would be better
+//TODO iterative version would be better, but lack of stdlib queue would decrease readability
 func printNotesOutline(note *Note, padding string, result []string) []string {
 	if note == nil {
 		return result
