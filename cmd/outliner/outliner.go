@@ -11,7 +11,7 @@ import (
 const (
 	notesDelimiter    = "...."
 	markdownLineBreak = "  "
-	outlineTag        = "#outline"
+	tag               = "#index"
 )
 
 type Note struct {
@@ -55,7 +55,7 @@ func main() {
 	resultFilename := getResultFilename(file)
 	fmt.Printf("writing to %s\n", resultFilename)
 
-	resultContent := []string{getResultNoteHeader(resultFilename), outlineTag}
+	resultContent := []string{getResultNoteHeader(resultFilename), tag}
 	resultContent = append(resultContent, outline...)
 
 	writeToFile(resultFilename, resultContent)

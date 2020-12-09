@@ -57,7 +57,7 @@ func getResultFilename(file string) string {
 	return fmt.Sprintf("%s/%s %s %s.md",
 		basePath,
 		time.Now().Format("200601021504"),
-		"Outline",
+		"Index",
 		getNoteName(file),
 	)
 }
