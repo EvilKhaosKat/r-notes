@@ -6,10 +6,12 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 const (
-	notesDelimiter    = "...."
+	notesDelimiter    = "    "
 	markdownLineBreak = "  "
 	tag               = "#index"
 )
@@ -71,12 +73,27 @@ func printNotesOutline(note *Note, padding string, result []string) []string {
 		return result
 	}
 
-	result = append(result, fmt.Sprintf("%s[[%s]]%s", padding, note.String(), markdownLineBreak))
+	noteLink := getNoteLink(note)
+	result = append(result, fmt.Sprintf("%s- %s%s", padding, noteLink, markdownLineBreak))
 	for _, child := range note.children {
 		result = printNotesOutline(child, padding+notesDelimiter, result)
 	}
 
 	return result
+}
+
+func isId(id string) bool {
+	_, err := strconv.Atoi(id)
+	return err == nil
+}
+
+func getNoteLink(note *Note) string {
+	firstSpaceIndex := strings.Index(note.name, " ")
+	if firstSpaceIndex != -1 && isId(note.name[:firstSpaceIndex]) {
+		return fmt.Sprintf("%s [[%s]]", note.name[firstSpaceIndex+1:], note.name[:firstSpaceIndex])
+	} else {
+		return note.name
+	}
 }
 
 func parseNoteHierarchy(file string, files []string, parent *Note, levelsLeft int) *Note {
