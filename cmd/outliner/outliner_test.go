@@ -93,8 +93,8 @@ func Test_getNoteName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getNoteName(tt.args.file); got != tt.want {
-				t.Errorf("getNoteName() = %v, want %v", got, tt.want)
+			if got := getFullNoteName(tt.args.file); got != tt.want {
+				t.Errorf("getFullNoteName() = %v, want %v", got, tt.want)
 			}
 		})
 	}

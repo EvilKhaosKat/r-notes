@@ -64,7 +64,7 @@ func main() {
 }
 
 func getResultNoteHeader(resultFilename string) string {
-	return "# " + getNoteName(resultFilename)
+	return "# " + getFullNoteName(resultFilename)
 }
 
 //TODO iterative version would be better, but lack of stdlib queue would decrease readability
@@ -106,7 +106,7 @@ func parseNoteHierarchy(file string, files []string, parent *Note, levelsLeft in
 		log.Fatal(err)
 	}
 
-	note := newNote(getNoteName(file), file, parent, nil)
+	note := newNote(getFullNoteName(file), file, parent, nil)
 
 	linkedFiles := getFilesByWikiLinks(file, files, getWikiLinks(content))
 	for _, linkedFile := range linkedFiles {

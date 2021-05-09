@@ -1,3 +1,3 @@
 module github.com/EvilKhaosKat/r-notes
 
-go 1.15
+go 1.16

@@ -2,12 +2,10 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 func getMdFiles(path string) ([]string, error) {
@@ -32,34 +30,9 @@ func getMdFiles(path string) ([]string, error) {
 	return files, nil
 }
 
-//TODO Trie would be much better
-func getFilesByWikiLinks(currentFile string, files []string, wikiLinks []string) []string {
-	var linkedFiles []string
-
-	for _, file := range files {
-		for _, link := range wikiLinks {
-			if file != currentFile && strings.Contains(file, link) {
-				linkedFiles = append(linkedFiles, file)
-			}
-		}
-	}
-
-	return linkedFiles
-}
-
 func getFullNoteName(file string) string {
 	fileName := filepath.Base(file)
 	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
-}
-
-func getResultFilename(file string) string {
-	basePath := filepath.Dir(file)
-	return fmt.Sprintf("%s/%s %s %s.md",
-		basePath,
-		time.Now().Format("200601021504"),
-		"Index",
-		getFullNoteName(file),
-	)
 }
 
 func readFile(path string) ([]string, error) {
