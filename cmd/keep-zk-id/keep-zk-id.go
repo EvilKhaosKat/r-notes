@@ -43,7 +43,7 @@ func main() {
 
 		header := []string{
 			"---",
-			"title: " + name,
+			"title: " + strings.ToLower(name),
 			"date: " + formatIdAsDate(id),
 			"tags: ",
 			"---",

@@ -16,9 +16,9 @@ func Test_GetFullNoteName(t *testing.T) {
 		{
 			name: "main",
 			args: args{
-				file: "/somewhere/zkId/note.md",
+				file: "/somewhere/zkId/1 note.md",
 			},
-			want: "note",
+			want: "1 note",
 		},
 	}
 	for _, tt := range tests {
