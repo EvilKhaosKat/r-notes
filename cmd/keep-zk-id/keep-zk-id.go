@@ -17,7 +17,7 @@ func main() {
 	}
 	log.Println("reading notes at " + folder)
 
-	notes, err := getMdFiles(folder)
+	notes, err := GetMdFiles(folder)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func main() {
 			continue
 		}
 
-		content, err := readFile(noteFilename)
+		content, err := ReadFile(noteFilename)
 		if err != nil {
 			panic(err)
 		}
@@ -49,7 +49,7 @@ func main() {
 			"---",
 		}
 
-		writeToFile(noteFilename, append(header, content...))
+		WriteToFile(noteFilename, append(header, content...))
 
 		newFilename := getFilepathOnlyId(noteFilename, id)
 		err = os.Rename(noteFilename, newFilename)
@@ -79,7 +79,7 @@ func parseNoteName(filename string) (isZettel bool, id, name string) {
 		return false, "", ""
 	}
 
-	fullNoteName := getFullNoteName(filename)
+	fullNoteName := GetFullNoteName(filename)
 
 	spaceIndex := strings.Index(fullNoteName, " ")
 	if spaceIndex == -1 {
@@ -92,7 +92,9 @@ func parseNoteName(filename string) (isZettel bool, id, name string) {
 		return false, "", ""
 	}
 
-	return true, id, strings.TrimLeft(fullNoteName, id)
+	name = strings.TrimLeft(fullNoteName, id)
+	name = strings.Trim(name, " ")
+	return true, id, name
 }
 
 func isZkId(id string) bool {

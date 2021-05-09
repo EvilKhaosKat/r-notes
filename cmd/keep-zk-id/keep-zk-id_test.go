@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func Test_getFullNoteName(t *testing.T) {
+func Test_GetFullNoteName(t *testing.T) {
 	type args struct {
 		file string
 	}
@@ -23,8 +23,8 @@ func Test_getFullNoteName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getFullNoteName(tt.args.file); got != tt.want {
-				t.Errorf("getFullNoteName() = %v, want %v", got, tt.want)
+			if got := GetFullNoteName(tt.args.file); got != tt.want {
+				t.Errorf("GetFullNoteName() = %v, want %v", got, tt.want)
 			}
 		})
 	}

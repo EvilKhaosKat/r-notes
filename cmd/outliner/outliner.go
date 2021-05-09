@@ -39,7 +39,7 @@ func main() {
 	}
 	log.Println("generating outline for file", file)
 
-	otherFiles, err := getMdFiles(folder)
+	otherFiles, err := GetMdFiles(folder)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,11 +60,11 @@ func main() {
 	resultContent := []string{getResultNoteHeader(resultFilename), tag}
 	resultContent = append(resultContent, outline...)
 
-	writeToFile(resultFilename, resultContent)
+	WriteToFile(resultFilename, resultContent)
 }
 
 func getResultNoteHeader(resultFilename string) string {
-	return "# " + getFullNoteName(resultFilename)
+	return "# " + GetFullNoteName(resultFilename)
 }
 
 //TODO iterative version would be better, but lack of stdlib queue would decrease readability
@@ -101,12 +101,12 @@ func parseNoteHierarchy(file string, files []string, parent *Note, levelsLeft in
 		return nil
 	}
 
-	content, err := readFile(file)
+	content, err := ReadFile(file)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	note := newNote(getFullNoteName(file), file, parent, nil)
+	note := newNote(GetFullNoteName(file), file, parent, nil)
 
 	linkedFiles := getFilesByWikiLinks(file, files, getWikiLinks(content))
 	for _, linkedFile := range linkedFiles {

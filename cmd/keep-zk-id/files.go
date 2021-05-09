@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func getMdFiles(path string) ([]string, error) {
+func GetMdFiles(path string) ([]string, error) {
 	var files []string
 
 	err := filepath.Walk(path,
@@ -30,12 +30,12 @@ func getMdFiles(path string) ([]string, error) {
 	return files, nil
 }
 
-func getFullNoteName(file string) string {
+func GetFullNoteName(file string) string {
 	fileName := filepath.Base(file)
 	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
 }
 
-func readFile(path string) ([]string, error) {
+func ReadFile(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func readFile(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-func writeToFile(filename string, content []string) {
+func WriteToFile(filename string, content []string) {
 	f, err := os.Create(filename)
 	if err != nil {
 		log.Fatal(err)
