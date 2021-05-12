@@ -18,6 +18,7 @@ const (
 )
 
 type Note struct {
+	id   string
 	name string
 	path string
 
@@ -29,8 +30,8 @@ func (n Note) String() string {
 	return n.name
 }
 
-func newNote(name string, path string, parent *Note, children []*Note) *Note {
-	return &Note{name: name, path: path, parent: parent, children: children}
+func newNote(id, name string, path string, parent *Note, children []*Note) *Note {
+	return &Note{id: id, name: name, path: path, parent: parent, children: children}
 }
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 	top := parseNoteHierarchy(path, otherFiles, nil, 3)
 	log.Printf("outline:\n")
 
-	outline := printNotesOutline(top, "", nil)
+	outline := getNotesOutline(top, "", nil)
 	for _, line := range outline {
 		fmt.Println(line)
 	}
@@ -76,7 +77,7 @@ func getResultPath(path string) string {
 }
 
 //TODO iterative version would be better, but lack of stdlib queue would decrease readability
-func printNotesOutline(note *Note, padding string, result []string) []string {
+func getNotesOutline(note *Note, padding string, result []string) []string {
 	if note == nil {
 		return result
 	}
@@ -84,7 +85,7 @@ func printNotesOutline(note *Note, padding string, result []string) []string {
 	noteLink := getNoteLink(note)
 	result = append(result, fmt.Sprintf("%s- %s%s", padding, noteLink, markdownLineBreak))
 	for _, child := range note.children {
-		result = printNotesOutline(child, padding+notesDelimiter, result)
+		result = getNotesOutline(child, padding+notesDelimiter, result)
 	}
 
 	return result
@@ -96,7 +97,7 @@ func getNoteLink(note *Note) string {
 	if firstSpaceIndex != -1 && common.IsZkId(note.name[:firstSpaceIndex]) {
 		return fmt.Sprintf("%s [[%s]]", note.name[firstSpaceIndex+1:], note.name[:firstSpaceIndex])
 	} else {
-		return note.name
+		return fmt.Sprintf("%s [[%s]]", note.name, note.id)
 	}
 }
 
@@ -110,12 +111,12 @@ func parseNoteHierarchy(path string, files []string, parent *Note, levelsLeft in
 		log.Fatal(err)
 	}
 
-	noteName, err := common.GetNoteNameByPath(path)
+	id, noteName, err := common.GetNoteNameByPath(path)
 	if err != nil {
 		panic(err)
 	}
 
-	note := newNote(noteName, path, parent, nil)
+	note := newNote(id, noteName, path, parent, nil)
 
 	linkedFiles := common.GetFilesByWikiLinks(path, files, getWikiLinks(content))
 	for _, linkedFile := range linkedFiles {
@@ -128,6 +129,7 @@ func parseNoteHierarchy(path string, files []string, parent *Note, levelsLeft in
 	return note
 }
 
+//TODO make sure to guarantee order
 //getWikiLinks extracts [[LINK] from provided file content
 func getWikiLinks(content []string) []string {
 	set := make(map[string]struct{})          //lack of golang sets ;(

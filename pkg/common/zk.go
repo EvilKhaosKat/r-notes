@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func GetNoteNameByNoteContent(content []string) (string, error) {
+func GetNoteNameByNoteContent(content []string) (name string, err error) {
 	for _, line := range content {
 		titleYamlHeader := "title:"
 		titleIdx := strings.Index(line, titleYamlHeader)

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"testing"
 )
 
-func Test_GetFullNoteName(t *testing.T) {
+func Test_GetFilename(t *testing.T) {
 	type args struct {
-		file string
+		path string
 	}
 	tests := []struct {
 		name string
@@ -16,14 +17,14 @@ func Test_GetFullNoteName(t *testing.T) {
 		{
 			name: "main",
 			args: args{
-				file: "/somewhere/zkId/1 note.md",
+				path: "/somewhere/zkId/1 note.md",
 			},
 			want: "1 note",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetFullNoteName(tt.args.file); got != tt.want {
+			if got := common.GetFilename(tt.args.path); got != tt.want {
 				t.Errorf("GetFullNoteName() = %v, want %v", got, tt.want)
 			}
 		})

@@ -35,7 +35,7 @@ func Test_getFilesByLinks(t *testing.T) {
 	}
 }
 
-func Test_getNoteHierarchy(t *testing.T) {
+func Test_getNotesOutline(t *testing.T) {
 	type args struct {
 		note    *Note
 		padding string
@@ -50,26 +50,28 @@ func Test_getNoteHierarchy(t *testing.T) {
 			name: "main",
 			args: args{
 				note: newNote(
+					"202105122138",
 					"note",
-					"/path/to/note.md",
+					"/path/to/202105122138.md",
 					nil,
 					[]*Note{
 						{
+							id:     "202105122139",
 							name:   "child",
-							path:   "path/to/child.md",
+							path:   "path/to/202105122139.md",
 							parent: nil, //TODO should have link to parent - create separate method for data prep
 						},
 					}),
 				padding: "",
 				result:  []string{},
 			},
-			want: []string{"[[note]]  ", "....[[child]]  "},
+			want: []string{"- note [[202105122138]]  ", "    - child [[202105122139]]  "},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := printNotesOutline(tt.args.note, tt.args.padding, tt.args.result); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("printNotesOutline() = %v, want %v", got, tt.want)
+			if got := getNotesOutline(tt.args.note, tt.args.padding, tt.args.result); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getNotesOutline() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -51,18 +51,23 @@ func GetFilename(path string) string {
 	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
 
-func GetNoteNameByPath(path string) (string, error) {
-	isZettel, _, name := ParseNoteFilename(GetFilename(path))
+func GetNoteNameByPath(path string) (id, name string, err error) {
+	isZettel, id, name := ParseNoteFilename(GetFilename(path))
 	if isZettel && len(name) != 0 {
-		return name, nil
+		return id, name, nil
 	}
 
 	content, err := ReadFile(path)
 	if err != nil {
-		return "", fmt.Errorf("reading note %v failed: %w", path, err)
+		return "", "", fmt.Errorf("reading note %v failed: %w", path, err)
 	}
 
-	return GetNoteNameByNoteContent(content)
+	name, err = GetNoteNameByNoteContent(content)
+	if err != nil {
+		return "", "", err
+	}
+
+	return id, name, nil
 }
 
 func ReadFile(path string) ([]string, error) {
