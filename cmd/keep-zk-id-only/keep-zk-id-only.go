@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
-	"time"
 )
 
 func main() {
@@ -41,13 +39,7 @@ func main() {
 			panic(err)
 		}
 
-		header := []string{
-			"---",
-			"title: " + strings.ToLower(name),
-			"date: " + formatIdAsDate(id),
-			"tags: ",
-			"---",
-		}
+		header := common.GetYamlHeader(id, name)
 
 		common.WriteToFile(noteFilename, append(header, content...))
 
@@ -63,15 +55,6 @@ func main() {
 
 func getFilepathOnlyId(note string, id string) string {
 	return filepath.Dir(note) + "/" + id + ".md"
-}
-
-func formatIdAsDate(zkId string) string {
-	date, err := time.Parse("200601021504", zkId)
-	if err != nil {
-		panic(err)
-	}
-
-	return date.Format("2006-01-02 15:04")
 }
 
 func parseNoteNameByFilename(filename string) (isZettel bool, id, name string) {

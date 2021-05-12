@@ -56,24 +56,29 @@ func main() {
 		fmt.Println(line)
 	}
 
-	resultFilename := getResultPath(path)
+	resultId, resultFilename := getResultPath(path)
 	fmt.Printf("writing to %s\n", resultFilename)
 
-	resultContent := []string{getResultNoteHeader(resultFilename), tag}
+	indexTitle := fmt.Sprintf("index for '%s'", top.name)
+
+	resultContent := common.GetYamlHeader(resultId, indexTitle)
+	resultContent = append(resultContent, getResultNoteHeader(resultFilename, indexTitle), tag)
 	resultContent = append(resultContent, outline...)
 
 	common.WriteToFile(resultFilename, resultContent)
 }
 
-func getResultNoteHeader(resultFilename string) string {
-	return "# " + common.GetFilename(resultFilename)
+func getResultNoteHeader(resultFilename string, title string) string {
+	return fmt.Sprintf("# %s %s", common.GetFilename(resultFilename), title)
 }
 
-func getResultPath(path string) string {
+func getResultPath(path string) (id, resultPath string) {
 	basePath := filepath.Dir(path)
-	return fmt.Sprintf("%s/%s.md",
-		basePath,
-		time.Now().Format("200601021504"))
+	zkId := time.Now().Format("200601021504")
+	return zkId,
+		fmt.Sprintf("%s/%s.md",
+			basePath,
+			zkId)
 }
 
 //TODO iterative version would be better, but lack of stdlib queue would decrease readability

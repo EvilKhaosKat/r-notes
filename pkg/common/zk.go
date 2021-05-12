@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func GetNoteNameByNoteContent(content []string) (name string, err error) {
@@ -16,7 +17,7 @@ func GetNoteNameByNoteContent(content []string) (name string, err error) {
 
 		//TODO it's better to rely on state machine and real parsing of yaml header
 		if hasYamlHeaderForTitle {
-			return line[titleIdx+len(titleYamlHeader):], nil
+			return line[titleIdx+len(titleYamlHeader)+1:], nil
 		} else if hasFirstLevelHeader {
 			return line[2:], nil
 		}
@@ -51,4 +52,23 @@ func ParseNoteFilename(filename string) (isZettel bool, id, name string) {
 	name = strings.TrimLeft(filename, id)
 	name = strings.Trim(name, " ")
 	return true, id, name
+}
+
+func GetYamlHeader(id string, name string) []string {
+	return []string{
+		"---",
+		"title: " + strings.ToLower(name),
+		"date: " + FormatIdAsIsoDate(id),
+		"tags: ",
+		"---",
+	}
+}
+
+func FormatIdAsIsoDate(zkId string) string {
+	date, err := time.Parse("200601021504", zkId)
+	if err != nil {
+		panic(err)
+	}
+
+	return date.Format("2006-01-02 15:04")
 }

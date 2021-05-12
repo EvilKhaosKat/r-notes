@@ -78,8 +78,8 @@ func Test_formatIdAsDate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := formatIdAsDate(tt.args.zkId); got != tt.want {
-				t.Errorf("formatIdAsDate() = %v, want %v", got, tt.want)
+			if got := FormatIdAsDate(tt.args.zkId); got != tt.want {
+				t.Errorf("FormatIdAsIsoDate() = %v, want %v", got, tt.want)
 			}
 		})
 	}
