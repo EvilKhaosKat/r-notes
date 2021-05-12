@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"reflect"
 	"testing"
 )
@@ -27,7 +28,7 @@ func Test_getFilesByLinks(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getFilesByWikiLinks(tt.args.currentFile, tt.args.files, tt.args.wikiLinks); !reflect.DeepEqual(got, tt.want) {
+			if got := common.GetFilesByWikiLinks(tt.args.currentFile, tt.args.files, tt.args.wikiLinks); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getFilesByWikiLinks() = %v, want %v", got, tt.want)
 			}
 		})
@@ -54,9 +55,9 @@ func Test_getNoteHierarchy(t *testing.T) {
 					nil,
 					[]*Note{
 						{
-							name:     "child",
-							filename: "path/to/child.md",
-							parent:   nil, //TODO should have link to parent - create separate method for data prep
+							name:   "child",
+							path:   "path/to/child.md",
+							parent: nil, //TODO should have link to parent - create separate method for data prep
 						},
 					}),
 				padding: "",
@@ -93,8 +94,8 @@ func Test_getNoteName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetFullNoteName(tt.args.file); got != tt.want {
-				t.Errorf("GetFullNoteName() = %v, want %v", got, tt.want)
+			if got := common.GetFilename(tt.args.file); got != tt.want {
+				t.Errorf("GetFilename() = %v, want %v", got, tt.want)
 			}
 		})
 	}

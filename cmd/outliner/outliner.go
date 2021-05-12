@@ -2,23 +2,24 @@ package main
 
 import (
 	"fmt"
+	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
+	"time"
 )
 
 const (
 	notesDelimiter    = "    "
 	markdownLineBreak = "  "
-	tag               = "#index"
+	tag               = ":index:\n#index"
 )
 
 type Note struct {
-	name     string
-	filename string
+	name string
+	path string
 
 	parent   *Note
 	children []*Note
@@ -28,25 +29,25 @@ func (n Note) String() string {
 	return n.name
 }
 
-func newNote(name string, filename string, parent *Note, children []*Note) *Note {
-	return &Note{name: name, filename: filename, parent: parent, children: children}
+func newNote(name string, path string, parent *Note, children []*Note) *Note {
+	return &Note{name: name, path: path, parent: parent, children: children}
 }
 
 func main() {
-	file, folder, err := getNoteFileArgument()
+	path, folder, err := getNoteFileArgument()
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("generating outline for file", file)
+	log.Println("generating outline for path", path)
 
-	otherFiles, err := GetMdFiles(folder)
+	otherFiles, err := common.GetMdFiles(folder)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("found .md files:", len(otherFiles))
 	log.Println("parsing links")
 
-	top := parseNoteHierarchy(file, otherFiles, nil, 3)
+	top := parseNoteHierarchy(path, otherFiles, nil, 3)
 	log.Printf("outline:\n")
 
 	outline := printNotesOutline(top, "", nil)
@@ -54,17 +55,24 @@ func main() {
 		fmt.Println(line)
 	}
 
-	resultFilename := getResultFilename(file)
+	resultFilename := getResultPath(path)
 	fmt.Printf("writing to %s\n", resultFilename)
 
 	resultContent := []string{getResultNoteHeader(resultFilename), tag}
 	resultContent = append(resultContent, outline...)
 
-	WriteToFile(resultFilename, resultContent)
+	common.WriteToFile(resultFilename, resultContent)
 }
 
 func getResultNoteHeader(resultFilename string) string {
-	return "# " + GetFullNoteName(resultFilename)
+	return "# " + common.GetFilename(resultFilename)
+}
+
+func getResultPath(path string) string {
+	basePath := filepath.Dir(path)
+	return fmt.Sprintf("%s/%s.md",
+		basePath,
+		time.Now().Format("200601021504"))
 }
 
 //TODO iterative version would be better, but lack of stdlib queue would decrease readability
@@ -82,33 +90,34 @@ func printNotesOutline(note *Note, padding string, result []string) []string {
 	return result
 }
 
-func isId(id string) bool {
-	_, err := strconv.Atoi(id)
-	return err == nil
-}
-
+//TODO extract and reuse with logic from common pkg
 func getNoteLink(note *Note) string {
 	firstSpaceIndex := strings.Index(note.name, " ")
-	if firstSpaceIndex != -1 && isId(note.name[:firstSpaceIndex]) {
+	if firstSpaceIndex != -1 && common.IsZkId(note.name[:firstSpaceIndex]) {
 		return fmt.Sprintf("%s [[%s]]", note.name[firstSpaceIndex+1:], note.name[:firstSpaceIndex])
 	} else {
 		return note.name
 	}
 }
 
-func parseNoteHierarchy(file string, files []string, parent *Note, levelsLeft int) *Note {
+func parseNoteHierarchy(path string, files []string, parent *Note, levelsLeft int) *Note {
 	if levelsLeft == 0 {
 		return nil
 	}
 
-	content, err := ReadFile(file)
+	content, err := common.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	note := newNote(GetFullNoteName(file), file, parent, nil)
+	noteName, err := common.GetNoteNameByPath(path)
+	if err != nil {
+		panic(err)
+	}
 
-	linkedFiles := getFilesByWikiLinks(file, files, getWikiLinks(content))
+	note := newNote(noteName, path, parent, nil)
+
+	linkedFiles := common.GetFilesByWikiLinks(path, files, getWikiLinks(content))
 	for _, linkedFile := range linkedFiles {
 		child := parseNoteHierarchy(linkedFile, files, note, levelsLeft-1)
 		if child != nil {
@@ -141,12 +150,12 @@ func getWikiLinks(content []string) []string {
 
 func getNoteFileArgument() (string, string, error) {
 	if len(os.Args) != 2 {
-		return "", "", fmt.Errorf("specify filename for generating outline")
+		return "", "", fmt.Errorf("specify path for generating outline")
 	}
 
 	filename := os.Args[1]
 	if filepath.Ext(filename) == "md" {
-		return "", "", fmt.Errorf("specify .md filename for generating outline")
+		return "", "", fmt.Errorf("specify .md path for generating outline")
 	}
 
 	return filename, filepath.Dir(filename), nil

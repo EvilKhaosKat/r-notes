@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -17,7 +17,7 @@ func main() {
 	}
 	log.Println("reading notes at " + folder)
 
-	notes, err := GetMdFiles(folder)
+	notes, err := common.GetMdFiles(folder)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func main() {
 
 	for _, noteFilename := range notes {
 
-		isZettel, id, name := parseNoteName(noteFilename)
+		isZettel, id, name := parseNoteNameByFilename(noteFilename)
 		if !isZettel {
 			fmt.Printf("%s is not a zettel\n", noteFilename)
 			continue
@@ -36,7 +36,7 @@ func main() {
 			continue
 		}
 
-		content, err := ReadFile(noteFilename)
+		content, err := common.ReadFile(noteFilename)
 		if err != nil {
 			panic(err)
 		}
@@ -49,7 +49,7 @@ func main() {
 			"---",
 		}
 
-		WriteToFile(noteFilename, append(header, content...))
+		common.WriteToFile(noteFilename, append(header, content...))
 
 		newFilename := getFilepathOnlyId(noteFilename, id)
 		err = os.Rename(noteFilename, newFilename)
@@ -74,37 +74,12 @@ func formatIdAsDate(zkId string) string {
 	return date.Format("2006-01-02 15:04")
 }
 
-func parseNoteName(filename string) (isZettel bool, id, name string) {
+func parseNoteNameByFilename(filename string) (isZettel bool, id, name string) {
 	if filepath.Ext(filename) != ".md" {
 		return false, "", ""
 	}
 
-	fullNoteName := GetFullNoteName(filename)
-
-	spaceIndex := strings.Index(fullNoteName, " ")
-	if spaceIndex == -1 {
-		id = fullNoteName
-	} else {
-		id = fullNoteName[:spaceIndex]
-	}
-
-	if !isZkId(id) {
-		return false, "", ""
-	}
-
-	name = strings.TrimLeft(fullNoteName, id)
-	name = strings.Trim(name, " ")
-	return true, id, name
-}
-
-func isZkId(id string) bool {
-	if len(id) != 12 { //202005091607 = 4+2+2+2+2 = 12
-		return false
-
-	}
-
-	_, err := strconv.Atoi(id)
-	return err == nil
+	return common.ParseNoteFilename(common.GetFilename(filename))
 }
 
 func getNotesFolderArg() (string, error) {

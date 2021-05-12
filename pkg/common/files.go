@@ -1,7 +1,8 @@
-package main
+package common
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -30,9 +31,38 @@ func GetMdFiles(path string) ([]string, error) {
 	return files, nil
 }
 
-func GetFullNoteName(file string) string {
-	fileName := filepath.Base(file)
-	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
+//TODO Trie would be much better
+func GetFilesByWikiLinks(currentFile string, files []string, wikiLinks []string) []string {
+	var linkedFiles []string
+
+	for _, file := range files {
+		for _, link := range wikiLinks {
+			if file != currentFile && strings.Contains(file, link) {
+				linkedFiles = append(linkedFiles, file)
+			}
+		}
+	}
+
+	return linkedFiles
+}
+
+func GetFilename(path string) string {
+	filename := filepath.Base(path)
+	return strings.TrimSuffix(filename, filepath.Ext(filename))
+}
+
+func GetNoteNameByPath(path string) (string, error) {
+	isZettel, _, name := ParseNoteFilename(GetFilename(path))
+	if isZettel && len(name) != 0 {
+		return name, nil
+	}
+
+	content, err := ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("reading note %v failed: %w", path, err)
+	}
+
+	return GetNoteNameByNoteContent(content)
 }
 
 func ReadFile(path string) ([]string, error) {
@@ -52,8 +82,8 @@ func ReadFile(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-func WriteToFile(filename string, content []string) {
-	f, err := os.Create(filename)
+func WriteToFile(path string, content []string) {
+	f, err := os.Create(path)
 	if err != nil {
 		log.Fatal(err)
 	}
