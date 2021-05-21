@@ -5,6 +5,7 @@ import (
 	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"log"
 	"os"
+	"sort"
 )
 
 func main() {
@@ -12,21 +13,28 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("reading notes at " + folder)
 
 	notes, err := common.GetMdFiles(folder)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("found .md files:", len(notes))
 
+	var result []string
 	for _, path := range notes {
 		id, name, err := common.GetNoteNameByPath(path)
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("[[%s]] %s\n", id, name)
+		if id != "" {
+			result = append(result, fmt.Sprintf("[[%s]] %s", id, name))
+		}
+	}
+
+	sort.Strings(result)
+
+	for _, entry := range result {
+		fmt.Println(entry)
 	}
 }
 
