@@ -140,10 +140,10 @@ func Test_parseNoteName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			flag, id, name := parseNoteNameByFilename(tt.args.file)
+			flag, id, name := parseNoteNameByPath(tt.args.file)
 
 			if flag != tt.want.flag || id != tt.want.id || name != tt.want.name {
-				t.Errorf("parseNoteNameByFilename() = %t %s %s, want %v", flag, id, name, tt.want)
+				t.Errorf("parseNoteNameByPath() = %t %s %s, want %v", flag, id, name, tt.want)
 			}
 		})
 	}

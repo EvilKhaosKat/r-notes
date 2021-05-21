@@ -21,35 +21,35 @@ func main() {
 	}
 	log.Println("found .md files:", len(notes))
 
-	for _, noteFilename := range notes {
+	for _, path := range notes {
 
-		isZettel, id, name := parseNoteNameByFilename(noteFilename)
+		isZettel, id, name := parseNoteNameByPath(path)
 		if !isZettel {
-			fmt.Printf("%s is not a zettel\n", noteFilename)
+			fmt.Printf("%s is not a zettel\n", path)
 			continue
 		}
 
 		if name == "" {
-			fmt.Printf("%s is already in 'zk id only' format\n", noteFilename)
+			fmt.Printf("%s is already in 'zk id only' format\n", path)
 			continue
 		}
 
-		content, err := common.ReadFile(noteFilename)
+		content, err := common.ReadFile(path)
 		if err != nil {
 			panic(err)
 		}
 
 		header := common.GetYamlHeader(id, name)
 
-		common.WriteToFile(noteFilename, append(header, content...))
+		common.WriteToFile(path, append(header, content...))
 
-		newFilename := getFilepathOnlyId(noteFilename, id)
-		err = os.Rename(noteFilename, newFilename)
+		newFilename := getFilepathOnlyId(path, id)
+		err = os.Rename(path, newFilename)
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("%s renamed to %s\n", noteFilename, newFilename)
+		fmt.Printf("%s renamed to %s\n", path, newFilename)
 	}
 }
 
@@ -57,12 +57,12 @@ func getFilepathOnlyId(note string, id string) string {
 	return filepath.Dir(note) + "/" + id + ".md"
 }
 
-func parseNoteNameByFilename(filename string) (isZettel bool, id, name string) {
-	if filepath.Ext(filename) != ".md" {
+func parseNoteNameByPath(path string) (isZettel bool, id, name string) {
+	if filepath.Ext(path) != ".md" {
 		return false, "", ""
 	}
 
-	return common.ParseNoteFilename(common.GetFilename(filename))
+	return common.ParseNoteFilename(common.GetFilename(path))
 }
 
 func getNotesFolderArg() (string, error) {
