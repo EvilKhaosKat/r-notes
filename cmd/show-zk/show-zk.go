@@ -23,7 +23,8 @@ func main() {
 	for _, path := range notes {
 		id, name, err := common.GetNoteNameByPath(path)
 		if err != nil {
-			panic(err)
+			log.Printf("cant extract note name from file '%s'", path)
+			continue
 		}
 
 		if id != "" {
