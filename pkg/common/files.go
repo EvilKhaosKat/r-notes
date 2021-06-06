@@ -13,10 +13,18 @@ const MdExtension = ".md"
 
 type Path string
 
-func GetNotesPaths(path, extension string) ([]Path, error) {
+func GetNotesFolderArg() (Path, error) {
+	if len(os.Args) != 2 {
+		return "", fmt.Errorf("specify notes folder")
+	}
+
+	return Path(os.Args[1]), nil
+}
+
+func GetNotesPaths(folderPath Path, extension string) ([]Path, error) {
 	var paths []Path
 
-	err := filepath.Walk(path,
+	err := filepath.Walk(string(folderPath),
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -36,13 +44,13 @@ func GetNotesPaths(path, extension string) ([]Path, error) {
 }
 
 //TODO Trie would be much better
-func GetFilesByWikiLinks(currentFile string, files []string, wikiLinks []string) []string {
-	var linkedFiles []string
+func GetFilesByWikiLinks(currentPath Path, paths []Path, wikiLinks []string) []Path {
+	var linkedFiles []Path
 
-	for _, file := range files {
+	for _, path := range paths {
 		for _, link := range wikiLinks {
-			if file != currentFile && strings.Contains(file, link) {
-				linkedFiles = append(linkedFiles, file)
+			if path != currentPath && strings.Contains(string(path), link) {
+				linkedFiles = append(linkedFiles, path)
 			}
 		}
 	}

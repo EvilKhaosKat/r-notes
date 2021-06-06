@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"log"
-	"os"
 	"sort"
 )
 
 func main() {
-	folder, err := getNotesFolderArg()
+	folder, err := common.GetNotesFolderArg()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,12 +36,4 @@ func main() {
 	for _, entry := range result {
 		fmt.Println(entry)
 	}
-}
-
-func getNotesFolderArg() (string, error) {
-	if len(os.Args) != 2 {
-		return "", fmt.Errorf("specify notes folder")
-	}
-
-	return os.Args[1], nil
 }

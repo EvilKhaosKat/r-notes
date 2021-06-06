@@ -8,8 +8,8 @@ import (
 
 func Test_getFilesByLinks(t *testing.T) {
 	type args struct {
-		currentFile string
-		files       []string
+		currentFile common.Path
+		files       []common.Path
 		wikiLinks   []string
 	}
 	tests := []struct {
@@ -21,7 +21,7 @@ func Test_getFilesByLinks(t *testing.T) {
 			name: "main",
 			args: args{
 				currentFile: "path.md",
-				files:       []string{"path.md", "first.md", "second.md", "third.md"},
+				files:       []common.Path{"path.md", "first.md", "second.md", "third.md"},
 				wikiLinks:   []string{"first", "third"}},
 			want: []string{"first.md", "third.md"},
 		},

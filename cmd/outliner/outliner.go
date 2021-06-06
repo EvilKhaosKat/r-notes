@@ -20,7 +20,7 @@ const (
 type Note struct {
 	id   string
 	name string
-	path string
+	path common.Path
 
 	parent   *Note
 	children []*Note
@@ -30,7 +30,7 @@ func (n Note) String() string {
 	return n.name
 }
 
-func newNote(id, name string, path string, parent *Note, children []*Note) *Note {
+func newNote(id, name string, path common.Path, parent *Note, children []*Note) *Note {
 	return &Note{id: id, name: name, path: path, parent: parent, children: children}
 }
 
@@ -56,29 +56,27 @@ func main() {
 		fmt.Println(line)
 	}
 
-	resultId, resultFilename := getResultPath(path)
-	fmt.Printf("writing to %s\n", resultFilename)
+	resultId, resultPath := getResultPath(path)
+	fmt.Printf("writing to %s\n", resultPath)
 
 	indexTitle := fmt.Sprintf("index for '%s'", top.name)
 
 	resultContent := common.GetYamlHeader(resultId, indexTitle)
-	resultContent = append(resultContent, getResultNoteHeader(resultFilename, indexTitle), tag)
+	resultContent = append(resultContent, getResultNoteHeader(resultPath, indexTitle), tag)
 	resultContent = append(resultContent, outline...)
 
-	common.WriteToFile(resultFilename, resultContent)
+	common.WriteToFile(resultPath, resultContent)
 }
 
-func getResultNoteHeader(resultFilename string, title string) string {
-	return fmt.Sprintf("# %s %s", common.GetFilename(resultFilename), title)
+func getResultNoteHeader(resultPath common.Path, title string) string {
+	return fmt.Sprintf("# %s %s", common.GetFilename(resultPath), title)
 }
 
-func getResultPath(path string) (id, resultPath string) {
-	basePath := filepath.Dir(path)
+func getResultPath(path common.Path) (id string, resultPath common.Path) {
+	basePath := filepath.Dir(string(path))
 	zkId := time.Now().Format("200601021504")
-	return zkId,
-		fmt.Sprintf("%s/%s.md",
-			basePath,
-			zkId)
+	return zkId, common.Path(
+		fmt.Sprintf("%s/%s.md", basePath, zkId))
 }
 
 //TODO iterative version would be better, but lack of stdlib queue would decrease readability
@@ -106,7 +104,7 @@ func getNoteLink(note *Note) string {
 	}
 }
 
-func parseNoteHierarchy(path string, files []string, parent *Note, levelsLeft int) *Note {
+func parseNoteHierarchy(path common.Path, paths []common.Path, parent *Note, levelsLeft int) *Note {
 	if levelsLeft == 0 {
 		return nil
 	}
@@ -123,9 +121,9 @@ func parseNoteHierarchy(path string, files []string, parent *Note, levelsLeft in
 
 	note := newNote(id, noteName, path, parent, nil)
 
-	linkedFiles := common.GetFilesByWikiLinks(path, files, getWikiLinks(content))
+	linkedFiles := common.GetFilesByWikiLinks(path, paths, getWikiLinks(content))
 	for _, linkedFile := range linkedFiles {
-		child := parseNoteHierarchy(linkedFile, files, note, levelsLeft-1)
+		child := parseNoteHierarchy(linkedFile, paths, note, levelsLeft-1)
 		if child != nil {
 			note.children = append(note.children, child)
 		}
@@ -155,7 +153,7 @@ func getWikiLinks(content []string) []string {
 	return links
 }
 
-func getNoteFileArgument() (string, string, error) {
+func getNoteFileArgument() (common.Path, common.Path, error) {
 	if len(os.Args) != 2 {
 		return "", "", fmt.Errorf("specify path for generating outline")
 	}
@@ -165,5 +163,5 @@ func getNoteFileArgument() (string, string, error) {
 		return "", "", fmt.Errorf("specify .md path for generating outline")
 	}
 
-	return filename, filepath.Dir(filename), nil
+	return common.Path(filename), common.Path(filepath.Dir(filename)), nil
 }

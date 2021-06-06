@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	folder, err := getNotesFolderArg()
+	folder, err := common.GetNotesFolderArg()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,12 +63,4 @@ func parseNoteNameByPath(path common.Path) (isZettel bool, id, name string) {
 	}
 
 	return common.ParseNoteFilename(common.GetFilename(path))
-}
-
-func getNotesFolderArg() (string, error) {
-	if len(os.Args) != 2 {
-		return "", fmt.Errorf("specify notes folder")
-	}
-
-	return os.Args[1], nil
 }
