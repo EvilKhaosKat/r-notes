@@ -22,7 +22,6 @@ func main() {
 	log.Println("found notes:", len(paths))
 
 	for _, path := range paths {
-
 		isZettel, id, name := parseNoteNameByPath(path)
 		if !isZettel {
 			fmt.Printf("%s is not a zettel\n", path)

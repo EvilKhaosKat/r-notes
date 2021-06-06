@@ -16,23 +16,6 @@ const (
 	tag               = ":index:\n#index"
 )
 
-type Note struct {
-	id   string
-	name string
-	path common.Path
-
-	parent   *Note
-	children []*Note
-}
-
-func (n Note) String() string {
-	return n.name
-}
-
-func newNote(id, name string, path common.Path, parent *Note, children []*Note) *Note {
-	return &Note{id: id, name: name, path: path, parent: parent, children: children}
-}
-
 func main() {
 	path, folder, err := common.GetNoteFileArgument(common.MdExtension)
 	if err != nil {
@@ -58,7 +41,7 @@ func main() {
 	resultId, resultPath := getResultPath(path)
 	fmt.Printf("writing to %s\n", resultPath)
 
-	indexTitle := fmt.Sprintf("index for '%s'", top.name)
+	indexTitle := fmt.Sprintf("index for '%s'", top.Name)
 
 	resultContent := common.GetYamlHeader(resultId, indexTitle)
 	resultContent = append(resultContent, getResultNoteHeader(resultPath, indexTitle), tag)
@@ -79,14 +62,14 @@ func getResultPath(path common.Path) (id string, resultPath common.Path) {
 }
 
 //TODO iterative version would be better, but lack of stdlib queue would decrease readability
-func getNotesOutline(note *Note, padding string, result []string) []string {
+func getNotesOutline(note *common.Note, padding string, result []string) []string {
 	if note == nil {
 		return result
 	}
 
 	noteLink := getNoteLink(note)
 	result = append(result, fmt.Sprintf("%s- %s%s", padding, noteLink, markdownLineBreak))
-	for _, child := range note.children {
+	for _, child := range note.LinkedTo {
 		result = getNotesOutline(child, padding+notesDelimiter, result)
 	}
 
@@ -94,16 +77,16 @@ func getNotesOutline(note *Note, padding string, result []string) []string {
 }
 
 //TODO extract and reuse with logic from common pkg
-func getNoteLink(note *Note) string {
-	firstSpaceIndex := strings.Index(note.name, " ")
-	if firstSpaceIndex != -1 && common.IsZkId(note.name[:firstSpaceIndex]) {
-		return fmt.Sprintf("%s [[%s]]", note.name[firstSpaceIndex+1:], note.name[:firstSpaceIndex])
+func getNoteLink(note *common.Note) string {
+	firstSpaceIndex := strings.Index(note.Name, " ")
+	if firstSpaceIndex != -1 && common.IsZkId(note.Name[:firstSpaceIndex]) {
+		return fmt.Sprintf("%s [[%s]]", note.Name[firstSpaceIndex+1:], note.Name[:firstSpaceIndex])
 	} else {
-		return fmt.Sprintf("%s [[%s]]", note.name, note.id)
+		return fmt.Sprintf("%s [[%s]]", note.Name, note.Id)
 	}
 }
 
-func parseNoteHierarchy(path common.Path, paths []common.Path, parent *Note, levelsLeft int) *Note {
+func parseNoteHierarchy(path common.Path, paths []common.Path, parent *common.Note, levelsLeft int) *common.Note {
 	if levelsLeft == 0 {
 		return nil
 	}
@@ -118,13 +101,13 @@ func parseNoteHierarchy(path common.Path, paths []common.Path, parent *Note, lev
 		panic(err)
 	}
 
-	note := newNote(id, noteName, path, parent, nil)
+	note := common.NewNote(id, noteName, path, parent, nil)
 
 	linkedFiles := common.GetFilesByWikiLinks(path, paths, getWikiLinks(content))
 	for _, linkedFile := range linkedFiles {
 		child := parseNoteHierarchy(linkedFile, paths, note, levelsLeft-1)
 		if child != nil {
-			note.children = append(note.children, child)
+			note.LinkedTo = append(note.LinkedTo, child)
 		}
 	}
 

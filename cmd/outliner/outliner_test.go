@@ -37,7 +37,7 @@ func Test_getFilesByLinks(t *testing.T) {
 
 func Test_getNotesOutline(t *testing.T) {
 	type args struct {
-		note    *Note
+		note    *common.Note
 		padding string
 		result  []string
 	}
@@ -49,17 +49,17 @@ func Test_getNotesOutline(t *testing.T) {
 		{
 			name: "main",
 			args: args{
-				note: newNote(
+				note: common.NewNote(
 					"202105122138",
 					"note",
 					"/path/to/202105122138.md",
 					nil,
-					[]*Note{
+					[]*common.Note{
 						{
-							id:     "202105122139",
-							name:   "child",
-							path:   "path/to/202105122139.md",
-							parent: nil, //TODO should have link to parent - create separate method for data prep
+							Id:     "202105122139",
+							Name:   "child",
+							Path:   "path/to/202105122139.md",
+							Parent: nil, //TODO should have link to parent - create separate method for data prep
 						},
 					}),
 				padding: "",

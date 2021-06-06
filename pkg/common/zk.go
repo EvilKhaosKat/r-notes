@@ -23,11 +23,11 @@ func GetNoteNameByNoteContent(content []string) (name string, err error) {
 		}
 	}
 
-	return "", fmt.Errorf("not possible to detect and extract note name from file using yaml title or # header")
+	return "", fmt.Errorf("not possible to detect and extract note Name from file using yaml title or # header")
 }
 
 func IsZkId(id string) bool {
-	//TODO customize zk id format/length/etc.
+	//TODO customize zk Id format/length/etc.
 	if len(id) != 12 { //202005091607 = 4+2+2+2+2 = 12
 		return false
 
