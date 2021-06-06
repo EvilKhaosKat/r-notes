@@ -7,7 +7,7 @@ import (
 
 func Test_GetFilename(t *testing.T) {
 	type args struct {
-		path string
+		path common.Path
 	}
 	tests := []struct {
 		name string
@@ -33,7 +33,7 @@ func Test_GetFilename(t *testing.T) {
 
 func Test_getFilepathOnlyId(t *testing.T) {
 	type args struct {
-		file string
+		path common.Path
 		id   string
 	}
 	tests := []struct {
@@ -44,7 +44,7 @@ func Test_getFilepathOnlyId(t *testing.T) {
 		{
 			name: "main",
 			args: args{
-				file: "/somewhere/zkId/202105091600 a note.md",
+				path: "/somewhere/zkId/202105091600 a note.md",
 				id:   "202105091600",
 			},
 			want: "/somewhere/zkId/202105091600.md",
@@ -52,7 +52,7 @@ func Test_getFilepathOnlyId(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getFilepathOnlyId(tt.args.file, tt.args.id); got != tt.want {
+			if got := getFilepathOnlyId(tt.args.path, tt.args.id); got != tt.want {
 				t.Errorf("getFilepathOnlyId() = %v, want %v", got, tt.want)
 			}
 		})
@@ -78,7 +78,7 @@ func Test_formatIdAsDate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FormatIdAsDate(tt.args.zkId); got != tt.want {
+			if got := common.FormatIdAsIsoDate(tt.args.zkId); got != tt.want {
 				t.Errorf("FormatIdAsIsoDate() = %v, want %v", got, tt.want)
 			}
 		})
@@ -87,7 +87,7 @@ func Test_formatIdAsDate(t *testing.T) {
 
 func Test_parseNoteName(t *testing.T) {
 	type args struct {
-		file string
+		path common.Path
 	}
 	tests := []struct {
 		name string
@@ -100,7 +100,7 @@ func Test_parseNoteName(t *testing.T) {
 		{
 			name: "common zettelkasten note",
 			args: args{
-				file: "/somewhere/zkId/202105091600 note.md",
+				path: "/somewhere/zkId/202105091600 note.md",
 			},
 			want: struct {
 				flag     bool
@@ -110,7 +110,7 @@ func Test_parseNoteName(t *testing.T) {
 		{
 			name: "multi word name zettelkasten note",
 			args: args{
-				file: "/somewhere/zkId/202105091600 multi word.md",
+				path: "/somewhere/zkId/202105091600 multi word.md",
 			},
 			want: struct {
 				flag     bool
@@ -120,7 +120,7 @@ func Test_parseNoteName(t *testing.T) {
 		{
 			name: "not a zettelkasten formatted name",
 			args: args{
-				file: "/somewhere/zkId/that's not a note you are searching for.md",
+				path: "/somewhere/zkId/that's not a note you are searching for.md",
 			},
 			want: struct {
 				flag     bool
@@ -130,7 +130,7 @@ func Test_parseNoteName(t *testing.T) {
 		{
 			name: "already formatted name",
 			args: args{
-				file: "/somewhere/zkId/202105091600.md",
+				path: "/somewhere/zkId/202105091600.md",
 			},
 			want: struct {
 				flag     bool
@@ -140,7 +140,7 @@ func Test_parseNoteName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			flag, id, name := parseNoteNameByPath(tt.args.file)
+			flag, id, name := parseNoteNameByPath(tt.args.path)
 
 			if flag != tt.want.flag || id != tt.want.id || name != tt.want.name {
 				t.Errorf("parseNoteNameByPath() = %t %s %s, want %v", flag, id, name, tt.want)

@@ -41,7 +41,7 @@ func main() {
 	}
 	log.Println("generating outline for path", path)
 
-	otherFiles, err := common.GetMdFiles(folder)
+	otherFiles, err := common.GetNotesPaths(folder, common.MdExtension)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -135,10 +135,10 @@ func parseNoteHierarchy(path string, files []string, parent *Note, levelsLeft in
 }
 
 //TODO make sure to guarantee order
-//getWikiLinks extracts [[LINK] from provided file content
+//getWikiLinks extracts [[LINK] from provided path content
 func getWikiLinks(content []string) []string {
 	set := make(map[string]struct{})          //lack of golang sets ;(
-	re := regexp.MustCompile(`\[\[(.+?)\]\]`) //TODO compile once for app rather than once per file
+	re := regexp.MustCompile(`\[\[(.+?)\]\]`) //TODO compile once for app rather than once per path
 
 	for _, line := range content {
 		for _, match := range re.FindAllStringSubmatch(line, -1) {

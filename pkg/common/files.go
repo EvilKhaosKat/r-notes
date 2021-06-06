@@ -9,8 +9,12 @@ import (
 	"strings"
 )
 
-func GetMdFiles(path string) ([]string, error) {
-	var files []string
+const MdExtension = ".md"
+
+type Path string
+
+func GetNotesPaths(path, extension string) ([]Path, error) {
+	var paths []Path
 
 	err := filepath.Walk(path,
 		func(path string, info os.FileInfo, err error) error {
@@ -18,8 +22,8 @@ func GetMdFiles(path string) ([]string, error) {
 				return err
 			}
 
-			if !info.IsDir() && filepath.Ext(path) == ".md" {
-				files = append(files, path)
+			if !info.IsDir() && filepath.Ext(path) == extension {
+				paths = append(paths, Path(path))
 			}
 			return nil
 		})
@@ -28,7 +32,7 @@ func GetMdFiles(path string) ([]string, error) {
 		return nil, err
 	}
 
-	return files, nil
+	return paths, nil
 }
 
 //TODO Trie would be much better
@@ -46,12 +50,12 @@ func GetFilesByWikiLinks(currentFile string, files []string, wikiLinks []string)
 	return linkedFiles
 }
 
-func GetFilename(path string) string {
-	filename := filepath.Base(path)
+func GetFilename(path Path) string {
+	filename := filepath.Base(string(path))
 	return strings.TrimSuffix(filename, filepath.Ext(filename))
 }
 
-func GetNoteNameByPath(path string) (id, name string, err error) {
+func GetNoteNameByPath(path Path) (id, name string, err error) {
 	isZettel, id, name := ParseNoteFilename(GetFilename(path))
 	if isZettel && len(name) != 0 {
 		return id, name, nil
@@ -70,8 +74,8 @@ func GetNoteNameByPath(path string) (id, name string, err error) {
 	return id, name, nil
 }
 
-func ReadFile(path string) ([]string, error) {
-	file, err := os.Open(path)
+func ReadFile(path Path) ([]string, error) {
+	file, err := os.Open(string(path))
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +91,8 @@ func ReadFile(path string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
-func WriteToFile(path string, content []string) {
-	f, err := os.Create(path)
+func WriteToFile(path Path, content []string) {
+	f, err := os.Create(string(path))
 	if err != nil {
 		log.Fatal(err)
 	}

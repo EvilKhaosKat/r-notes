@@ -15,13 +15,13 @@ func main() {
 	}
 	log.Println("reading notes at " + folder)
 
-	notes, err := common.GetMdFiles(folder)
+	paths, err := common.GetNotesPaths(folder, common.MdExtension)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("found .md files:", len(notes))
+	log.Println("found notes:", len(paths))
 
-	for _, path := range notes {
+	for _, path := range paths {
 
 		isZettel, id, name := parseNoteNameByPath(path)
 		if !isZettel {
@@ -43,22 +43,22 @@ func main() {
 
 		common.WriteToFile(path, append(header, content...))
 
-		newFilename := getFilepathOnlyId(path, id)
-		err = os.Rename(path, newFilename)
+		newPath := getFilepathOnlyId(path, id)
+		err = os.Rename(string(path), newPath)
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Printf("%s renamed to %s\n", path, newFilename)
+		fmt.Printf("%s renamed to %s\n", path, newPath)
 	}
 }
 
-func getFilepathOnlyId(note string, id string) string {
-	return filepath.Dir(note) + "/" + id + ".md"
+func getFilepathOnlyId(oldPath common.Path, id string) string {
+	return filepath.Dir(string(oldPath)) + "/" + id + ".md"
 }
 
-func parseNoteNameByPath(path string) (isZettel bool, id, name string) {
-	if filepath.Ext(path) != ".md" {
+func parseNoteNameByPath(path common.Path) (isZettel bool, id, name string) {
+	if filepath.Ext(string(path)) != ".md" {
 		return false, "", ""
 	}
 

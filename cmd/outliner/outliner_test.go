@@ -20,8 +20,8 @@ func Test_getFilesByLinks(t *testing.T) {
 		{
 			name: "main",
 			args: args{
-				currentFile: "file.md",
-				files:       []string{"file.md", "first.md", "second.md", "third.md"},
+				currentFile: "path.md",
+				files:       []string{"path.md", "first.md", "second.md", "third.md"},
 				wikiLinks:   []string{"first", "third"}},
 			want: []string{"first.md", "third.md"},
 		},
@@ -79,7 +79,7 @@ func Test_getNotesOutline(t *testing.T) {
 
 func Test_getNoteName(t *testing.T) {
 	type args struct {
-		file string
+		path common.Path
 	}
 	tests := []struct {
 		name string
@@ -89,14 +89,14 @@ func Test_getNoteName(t *testing.T) {
 		{
 			name: "main",
 			args: args{
-				file: "/somewhere/file/note.md",
+				path: "/somewhere/path/note.md",
 			},
 			want: "note",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := common.GetFilename(tt.args.file); got != tt.want {
+			if got := common.GetFilename(tt.args.path); got != tt.want {
 				t.Errorf("GetFilename() = %v, want %v", got, tt.want)
 			}
 		})
