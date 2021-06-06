@@ -57,7 +57,7 @@ func MoveHeaderFromTopToBottom(path Path, content []string) ([]string, bool) {
 	}
 
 	if header.From > 0 {
-		log.Printf("file %s has yaml header not on top, skikpping\n", path)
+		log.Printf("file %s has yaml header not on top, skipping\n", path)
 		return content, false
 	}
 
