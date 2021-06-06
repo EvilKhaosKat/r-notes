@@ -26,6 +26,7 @@ func main() {
 		updatedContent, canBeMoved := common.MoveHeaderFromTopToBottom(path, content)
 		if canBeMoved {
 			common.WriteToFile(path, updatedContent)
+			log.Printf("yaml header moved to bottom for file %s\n", path)
 		}
 	}
 }
