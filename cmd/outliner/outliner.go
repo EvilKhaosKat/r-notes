@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"log"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -35,7 +34,7 @@ func newNote(id, name string, path common.Path, parent *Note, children []*Note) 
 }
 
 func main() {
-	path, folder, err := getNoteFileArgument()
+	path, folder, err := common.GetNoteFileArgument(common.MdExtension)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -151,17 +150,4 @@ func getWikiLinks(content []string) []string {
 	}
 
 	return links
-}
-
-func getNoteFileArgument() (common.Path, common.Path, error) {
-	if len(os.Args) != 2 {
-		return "", "", fmt.Errorf("specify path for generating outline")
-	}
-
-	filename := os.Args[1]
-	if filepath.Ext(filename) == "md" {
-		return "", "", fmt.Errorf("specify .md path for generating outline")
-	}
-
-	return common.Path(filename), common.Path(filepath.Dir(filename)), nil
 }

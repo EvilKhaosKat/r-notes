@@ -13,6 +13,19 @@ const MdExtension = ".md"
 
 type Path string
 
+func GetNoteFileArgument(extension string) (Path, Path, error) {
+	if len(os.Args) != 2 {
+		return "", "", fmt.Errorf("specify path for generating outline")
+	}
+
+	filename := os.Args[1]
+	if filepath.Ext(filename) == extension {
+		return "", "", fmt.Errorf("specify %s path for generating outline", extension)
+	}
+
+	return Path(filename), Path(filepath.Dir(filename)), nil
+}
+
 func GetNotesFolderArg() (Path, error) {
 	if len(os.Args) != 2 {
 		return "", fmt.Errorf("specify notes folder")
