@@ -13,27 +13,6 @@ const MdExtension = ".md"
 
 type Path string
 
-func GetNoteFileArgument(extension string) (Path, Path, error) {
-	if len(os.Args) != 2 {
-		return "", "", fmt.Errorf("specify Path for generating outline")
-	}
-
-	filename := os.Args[1]
-	if filepath.Ext(filename) == extension {
-		return "", "", fmt.Errorf("specify %s Path for generating outline", extension)
-	}
-
-	return Path(filename), Path(filepath.Dir(filename)), nil
-}
-
-func GetNotesFolderArg() (Path, error) {
-	if len(os.Args) != 2 {
-		return "", fmt.Errorf("specify notes folder")
-	}
-
-	return Path(os.Args[1]), nil
-}
-
 func GetNotesPaths(folderPath Path, extension string) ([]Path, error) {
 	var paths []Path
 
@@ -54,21 +33,6 @@ func GetNotesPaths(folderPath Path, extension string) ([]Path, error) {
 	}
 
 	return paths, nil
-}
-
-//TODO Trie would be much better
-func GetFilesByWikiLinks(currentPath Path, paths []Path, wikiLinks []string) []Path {
-	var linkedFiles []Path
-
-	for _, path := range paths {
-		for _, link := range wikiLinks {
-			if path != currentPath && strings.Contains(string(path), link) {
-				linkedFiles = append(linkedFiles, path)
-			}
-		}
-	}
-
-	return linkedFiles
 }
 
 func GetFilename(path Path) string {
