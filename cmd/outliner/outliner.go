@@ -5,7 +5,6 @@ import (
 	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"log"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 )
@@ -30,7 +29,7 @@ func main() {
 	log.Println("found .md files:", len(otherFiles))
 	log.Println("parsing links")
 
-	top := parseNoteHierarchy(path, otherFiles, nil, 3)
+	top := parseNoteHierarchy(path, otherFiles, 3)
 	log.Printf("outline:\n")
 
 	outline := getNotesOutline(top, "", nil)
@@ -69,7 +68,7 @@ func getNotesOutline(note *common.Note, padding string, result []string) []strin
 
 	noteLink := getNoteLink(note)
 	result = append(result, fmt.Sprintf("%s- %s%s", padding, noteLink, markdownLineBreak))
-	for _, child := range note.LinkedTo {
+	for _, child := range note.Links {
 		result = getNotesOutline(child, padding+notesDelimiter, result)
 	}
 
@@ -86,7 +85,7 @@ func getNoteLink(note *common.Note) string {
 	}
 }
 
-func parseNoteHierarchy(path common.Path, paths []common.Path, parent *common.Note, levelsLeft int) *common.Note {
+func parseNoteHierarchy(path common.Path, paths []common.Path, levelsLeft int) *common.Note {
 	if levelsLeft == 0 {
 		return nil
 	}
@@ -101,36 +100,15 @@ func parseNoteHierarchy(path common.Path, paths []common.Path, parent *common.No
 		panic(err)
 	}
 
-	note := common.NewNote(id, noteName, path, parent, nil)
+	note := common.NewNote(id, noteName, path, nil)
 
-	linkedFiles := common.GetFilesByWikiLinks(path, paths, getWikiLinks(content))
+	linkedFiles := common.GetFilesByWikiLinks(path, paths, common.GetWikiLinks(content))
 	for _, linkedFile := range linkedFiles {
-		child := parseNoteHierarchy(linkedFile, paths, note, levelsLeft-1)
+		child := parseNoteHierarchy(linkedFile, paths, levelsLeft-1)
 		if child != nil {
-			note.LinkedTo = append(note.LinkedTo, child)
+			note.Links = append(note.Links, child)
 		}
 	}
 
 	return note
-}
-
-//TODO make sure to guarantee order
-//getWikiLinks extracts [[LINK] from provided path content
-func getWikiLinks(content []string) []string {
-	set := make(map[string]struct{})          //lack of golang sets ;(
-	re := regexp.MustCompile(`\[\[(.+?)\]\]`) //TODO compile once for app rather than once per path
-
-	for _, line := range content {
-		for _, match := range re.FindAllStringSubmatch(line, -1) {
-			link := match[1]
-			set[link] = struct{}{}
-		}
-	}
-
-	var links []string
-	for link := range set {
-		links = append(links, link)
-	}
-
-	return links
 }

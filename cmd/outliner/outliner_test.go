@@ -15,7 +15,7 @@ func Test_getFilesByLinks(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []string
+		want []common.Path
 	}{
 		{
 			name: "main",
@@ -23,7 +23,7 @@ func Test_getFilesByLinks(t *testing.T) {
 				currentFile: "path.md",
 				files:       []common.Path{"path.md", "first.md", "second.md", "third.md"},
 				wikiLinks:   []string{"first", "third"}},
-			want: []string{"first.md", "third.md"},
+			want: []common.Path{"first.md", "third.md"},
 		},
 	}
 	for _, tt := range tests {
@@ -53,13 +53,11 @@ func Test_getNotesOutline(t *testing.T) {
 					"202105122138",
 					"note",
 					"/path/to/202105122138.md",
-					nil,
 					[]*common.Note{
 						{
-							Id:     "202105122139",
-							Name:   "child",
-							Path:   "path/to/202105122139.md",
-							Parent: nil, //TODO should have link to parent - create separate method for data prep
+							Id:   "202105122139",
+							Name: "child",
+							Path: "path/to/202105122139.md",
 						},
 					}),
 				padding: "",
@@ -122,8 +120,8 @@ func Test_getWikiLinks(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getWikiLinks(tt.args.content); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getWikiLinks() = %v, want %v", got, tt.want)
+			if got := common.GetWikiLinks(tt.args.content); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetWikiLinks() = %v, want %v", got, tt.want)
 			}
 		})
 	}
