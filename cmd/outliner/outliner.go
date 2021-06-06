@@ -12,7 +12,7 @@ import (
 const (
 	notesDelimiter    = "    "
 	markdownLineBreak = "  "
-	tag               = ":index:\n#index"
+	tag               = "#index"
 )
 
 func main() {
