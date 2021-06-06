@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"github.com/EvilKhaosKat/r-notes/pkg/common"
 	"log"
-	"sort"
 )
 
 func main() {
@@ -18,22 +16,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var result []string
 	for _, path := range paths {
-		id, name, err := common.GetNoteNameByPath(path)
+		content, err := common.ReadFile(path)
 		if err != nil {
-			log.Printf("error while extracting note name from file '%s'\n", path)
+			log.Printf("error while reading %s: %s\n", path, err)
 			continue
 		}
 
-		if id != "" {
-			result = append(result, fmt.Sprintf("[[%s]] %s", id, name))
+		updatedContent, canBeMoved := common.MoveHeaderFromTopToBottom(path, content)
+		if canBeMoved {
+			common.WriteToFile(path, updatedContent)
 		}
-	}
-
-	sort.Strings(result)
-
-	for _, entry := range result {
-		fmt.Println(entry)
 	}
 }

@@ -76,6 +76,7 @@ func ReadFile(path Path) ([]string, error) {
 	return lines, scanner.Err()
 }
 
+//WriteToFile overwrites file content
 func WriteToFile(path Path, content []string) {
 	f, err := os.Create(string(path))
 	if err != nil {
