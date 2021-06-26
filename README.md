@@ -9,7 +9,7 @@ For example with 3 levels depth (note -> links -> links of links)(The Archive ap
 ![outliner.png](outliner.png)
 
 ### Install
-`go get -v -u github.com/EvilKhaosKat/r-notes/cmd/outliner`
+`go install github.com/EvilKhaosKat/r-notes/cmd/outliner@latest`
 
 ### Build manually
 
